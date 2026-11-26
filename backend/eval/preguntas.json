@@ -1,0 +1,25 @@
+{
+  "_instrucciones": "ADAPTEN estas preguntas a SU artículo. Las de tipo 'no_respondible' sirven tal cual. Para cada pregunta respondible escriban 'respuesta_esperada' (1-3 frases sacadas del artículo) y 'paginas' donde está la respuesta: así el juez puede medir 'correctness' y eval_retrieval puede medir la recuperación con preguntas reales. Mínimo 15 preguntas (rúbrica).",
+  "preguntas": [
+    {"id": "q01", "categoria": "general", "respondible": true, "pregunta": "¿Cuál es el objetivo principal de este survey y qué problema aborda?", "respuesta_esperada": "", "paginas": [1]},
+    {"id": "q02", "categoria": "general", "respondible": true, "pregunta": "¿Cuáles son las contribuciones principales que declaran los autores?", "respuesta_esperada": "", "paginas": []},
+    {"id": "q03", "categoria": "metodologia", "respondible": true, "pregunta": "¿Qué metodología de revisión siguieron (bases de datos consultadas, criterios de inclusión, PRISMA, rango de años)?", "respuesta_esperada": "", "paginas": []},
+    {"id": "q04", "categoria": "metodologia", "respondible": true, "pregunta": "¿Cuántos trabajos o artículos revisa el survey?", "respuesta_esperada": "", "paginas": []},
+    {"id": "q05", "categoria": "taxonomia", "respondible": true, "pregunta": "¿Qué taxonomía o clasificación propone el artículo para organizar los enfoques existentes?", "respuesta_esperada": "", "paginas": []},
+    {"id": "q06", "categoria": "taxonomia", "respondible": true, "pregunta": "Explica en qué se diferencian las dos primeras categorías de la taxonomía.", "respuesta_esperada": "", "paginas": []},
+    {"id": "q07", "categoria": "detalle", "respondible": true, "pregunta": "¿Qué datasets o benchmarks se mencionan para evaluar estos métodos?", "respuesta_esperada": "", "paginas": []},
+    {"id": "q08", "categoria": "detalle", "respondible": true, "pregunta": "¿Qué métricas de evaluación se utilizan comúnmente según el artículo?", "respuesta_esperada": "", "paginas": []},
+    {"id": "q09", "categoria": "detalle", "respondible": true, "pregunta": "¿Qué ventajas y limitaciones señala el artículo del enfoque más citado o dominante?", "respuesta_esperada": "", "paginas": []},
+    {"id": "q10", "categoria": "sintesis", "respondible": true, "pregunta": "¿Cuáles son los principales desafíos abiertos y líneas de investigación futura?", "respuesta_esperada": "", "paginas": []},
+    {"id": "q11", "categoria": "sintesis", "respondible": true, "pregunta": "¿Qué aplicaciones prácticas o dominios de uso se discuten?", "respuesta_esperada": "", "paginas": []},
+    {"id": "q12", "categoria": "sintesis", "respondible": true, "pregunta": "Resume las conclusiones del artículo en tres puntos.", "respuesta_esperada": "", "paginas": []},
+    {"id": "q13", "categoria": "tabla", "respondible": true, "pregunta": "¿Qué información compara la Tabla 1 del artículo?", "respuesta_esperada": "", "paginas": []},
+    {"id": "q14", "categoria": "figura", "respondible": true, "pregunta": "¿Qué representa la Figura 1 del artículo?", "respuesta_esperada": "", "paginas": []},
+    {"id": "q15", "categoria": "estructura", "respondible": true, "pregunta": "¿Cuáles son las secciones principales del artículo?", "respuesta_esperada": "", "paginas": []},
+    {"id": "q16", "categoria": "no_respondible", "respondible": false, "pregunta": "¿Quién ganó el Mundial de fútbol de 2022?", "respuesta_esperada": "", "paginas": []},
+    {"id": "q17", "categoria": "no_respondible", "respondible": false, "pregunta": "¿Cuál es el precio actual del Bitcoin?", "respuesta_esperada": "", "paginas": []},
+    {"id": "q18", "categoria": "no_respondible", "respondible": false, "pregunta": "¿Cuántos hijos tiene el primer autor del artículo?", "respuesta_esperada": "", "paginas": []},
+    {"id": "q19", "categoria": "no_respondible", "respondible": false, "pregunta": "¿Qué resultados obtuvo este método en el benchmark publicado en 2030?", "respuesta_esperada": "", "paginas": []},
+    {"id": "q20", "categoria": "multiturno", "respondible": true, "pregunta": "De los desafíos que mencionaste, ¿cuál consideran los autores más urgente?", "respuesta_esperada": "", "paginas": [], "contexto_previo": "¿Cuáles son los principales desafíos abiertos?"}
+  ]
+}
