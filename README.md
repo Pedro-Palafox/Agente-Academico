@@ -1,11 +1,10 @@
-# 📚 Agente Académico
+Agente Académico
 
 Agente conversacional que responde preguntas sobre un artículo científico tipo **survey (revista Q1)**,
 con respuestas fundamentadas, **citas de sección y página**, y la capacidad de decir *"esto no está en el
 artículo"* en lugar de inventar. Incluye un panel **/admin** protegido con estadísticas de uso.
 
-**Integrantes:** _Nombre 1_ · _Nombre 2_  
-**Artículo:** _título, revista, año, DOI_ (ver [evidencia de cuartil Q1](docs/evidencia_q1.md))
+**Integrantes:** Pedro Gomez y Yuting Lin  
 
 | Stack obligatorio | Dónde se usa |
 |---|---|
