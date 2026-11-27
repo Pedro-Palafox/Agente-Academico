@@ -1,0 +1,103 @@
+/* ===== Panel /admin · tema Medianoche ámbar =====
+   Todo va dentro de .adm (no afecta al chat). Las variables se redefinen aquí
+   para que las gráficas de recharts (que usan var(--series-1), etc.) tomen los colores. */
+.adm {
+  --bg: #080b14;
+  --surface: #111829;
+  --surface-2: #172036;
+  --border: #1e2840;
+  --text: #e8ecf5;
+  --text-secondary: #8a96b0;
+  --accent: #3b82f6;
+  --accent-text: #ffffff;
+  --hover: rgba(59, 130, 246, 0.14);
+  --grid: #1a2338;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --err: #f87171;
+  --series-1: #3b82f6;
+  --series-2: #f59e0b;
+  --series-3: #38bdf8;
+  --amber: #f59e0b;
+  --amber-2: #fbbf24;
+  --sky: #38bdf8;
+  --head: #0c1120;
+  color-scheme: dark;
+  min-height: 100%;
+  background: radial-gradient(1200px 500px at 50% -10%, rgba(245, 158, 11, .08), transparent 60%), var(--bg);
+  color: var(--text);
+}
+.adm a { color: var(--accent); }
+.adm code { background: var(--hover); color: #93c5fd; }
+.adm input, .adm select, .adm textarea { background: var(--bg); color: var(--text); border-color: var(--border); }
+.adm input:focus, .adm select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.adm input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.8); }
+ 
+/* botones */
+.adm .btn { background: var(--surface-2); color: var(--text); border-color: var(--border); border-radius: 9px; }
+.adm .btn:hover:not(:disabled) { background: var(--hover); }
+.adm .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.adm .btn.primary:hover:not(:disabled) { filter: brightness(1.1); background: var(--accent); box-shadow: 0 0 16px rgba(59, 130, 246, .35); }
+.adm .btn.ghost { background: transparent; border-color: transparent; }
+.adm .btn.ghost:hover { background: var(--hover); }
+.adm .btn.small { background: transparent; color: var(--amber-2); border-color: rgba(245, 158, 11, .55); }
+.adm .btn.small:hover:not(:disabled) { background: rgba(245, 158, 11, .12); }
+ 
+/* encabezado y pestañas */
+.adm .admin { padding-top: 16px; }
+.adm .admin-header { background: var(--head); border: 1px solid var(--border); border-radius: 14px; padding: 12px 18px; }
+.adm .brand { font-size: 1.15em; font-weight: 700; }
+.adm .tabs { background: var(--surface); border-color: var(--border); }
+.adm .tab { color: var(--text-secondary); }
+.adm .tab:hover { color: var(--text); }
+.adm .tab.active { background: var(--accent); color: #fff; font-weight: 600; }
+ 
+/* filtros */
+.adm .filters { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; }
+.adm .filters > .btn:last-child { background: var(--accent); border-color: var(--accent); color: #fff; }
+.adm .filters > .btn:last-child:hover:not(:disabled) { filter: brightness(1.1); }
+.adm .field { color: var(--text-secondary); }
+ 
+/* tarjetas y métricas */
+.adm .card { background: var(--surface); border-color: var(--border); border-radius: 14px; }
+.adm .card-title { font-size: 1.02em; display: flex; align-items: center; gap: 8px; }
+.adm .card-title::before { content: ""; width: 4px; height: 16px; border-radius: 2px; background: var(--amber); flex-shrink: 0; }
+.adm .tile { background: var(--surface); border-color: var(--border); border-top: 3px solid var(--tc, var(--accent)); border-radius: 12px; }
+.adm .tiles > .tile:nth-child(3n + 1) { --tc: var(--accent); }
+.adm .tiles > .tile:nth-child(3n + 2) { --tc: var(--amber); }
+.adm .tiles > .tile:nth-child(3n + 3) { --tc: var(--sky); }
+.adm .card .tile { background: var(--bg); }
+ 
+/* tablas */
+.adm .table th { color: var(--amber-2); text-transform: uppercase; font-size: .75em; letter-spacing: .06em; font-weight: 600;
+  border-bottom-color: var(--border); }
+.adm .table td { border-bottom-color: var(--grid); }
+.adm .table tbody tr:nth-child(even) td { background: rgba(255, 255, 255, .02); }
+.adm .clickable:hover td { background: var(--hover) !important; }
+ 
+/* etiquetas de estado */
+.adm .badge { background: var(--surface-2); color: var(--text-secondary); border: 1px solid var(--border); }
+.adm .badge.ok { color: var(--ok); background: rgba(52, 211, 153, .12); border-color: rgba(52, 211, 153, .35); }
+.adm .badge.warn { color: var(--warn); background: rgba(251, 191, 36, .08); border-color: rgba(251, 191, 36, .45); margin-top: 0; }
+.adm .badge.err { color: var(--err); background: rgba(248, 113, 113, .1); border-color: rgba(248, 113, 113, .35); }
+.adm .error-box { background: rgba(248, 113, 113, .08); border-color: rgba(248, 113, 113, .4); }
+ 
+/* detalle (modal) */
+.adm .modal-bg { background: rgba(2, 4, 10, .7); backdrop-filter: blur(3px); }
+.adm .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
+.adm .modal h4 { color: var(--amber-2); margin: 18px 0 6px; }
+ 
+/* login */
+.adm .login-wrap { min-height: 100vh; }
+.adm .login { border-top: 3px solid var(--amber); }
+ 
+/* scrollbars */
+.adm ::-webkit-scrollbar { width: 8px; height: 8px; }
+.adm ::-webkit-scrollbar-thumb { background: #2a3654; border-radius: 8px; }
+.adm ::-webkit-scrollbar-track { background: transparent; }
+ 
+@media (max-width: 760px) {
+  .adm .admin-header { justify-content: center; }
+  .adm .tabs { width: 100%; overflow-x: auto; }
+}
+ 

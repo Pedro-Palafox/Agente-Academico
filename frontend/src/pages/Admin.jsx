@@ -12,6 +12,7 @@ import {
   YAxis,
 } from "recharts";
 import { adminGet, adminLogin, adminPost, adminToken } from "../api.js";
+import "./admin.css";
 
 const fmt = (n, d = 0) => (n == null || Number.isNaN(Number(n)) ? "—" : Number(n).toLocaleString("es", { maximumFractionDigits: d }));
 const seg = (ms) => (ms == null ? "—" : `${(Number(ms) / 1000).toFixed(2)} s`);
@@ -545,5 +546,9 @@ function Dashboard({ onLogout }) {
 
 export default function Admin() {
   const [logged, setLogged] = useState(!!adminToken.get());
-  return logged ? <Dashboard onLogout={() => setLogged(false)} /> : <Login onOk={() => setLogged(true)} />;
+  return (
+    <div className="adm">
+      {logged ? <Dashboard onLogout={() => setLogged(false)} /> : <Login onOk={() => setLogged(true)} />}
+    </div>
+  );
 }

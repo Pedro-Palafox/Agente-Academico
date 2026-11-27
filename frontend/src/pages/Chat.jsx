@@ -2,12 +2,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { api, chatStream } from "../api.js";
 import Message from "../components/Message.jsx";
+import "./chat.css";
 
 const SUGERENCIAS = [
-  "¿Cuál es el objetivo principal del survey?",
-  "¿Qué taxonomía propone el artículo?",
-  "¿Cuáles son los desafíos abiertos?",
-  "¿Qué muestra la Figura 1?",
+  { t: "Objetivo", q: "¿Cuál es el objetivo principal del survey?" },
+  { t: "Taxonomía", q: "¿Qué taxonomía propone el artículo?" },
+  { t: "Desafíos", q: "¿Cuáles son los desafíos abiertos?" },
+  { t: "Figuras", q: "¿Qué muestra la Figura 1?" },
 ];
 
 export default function Chat() {
@@ -20,10 +21,13 @@ export default function Chat() {
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [loadingConv, setLoadingConv] = useState(false);
+  const [loadingDocs, setLoadingDocs] = useState(true);
+  const [online, setOnline] = useState(null); // null = comprobando
   const [globalError, setGlobalError] = useState("");
   const [sidebar, setSidebar] = useState(false);
   const endRef = useRef(null);
   const abortRef = useRef(null);
+  const taRef = useRef(null);
   const convRef = useRef(convId || null);
 
   const cargarConversaciones = useCallback(() => {
@@ -32,7 +36,17 @@ export default function Chat() {
 
   useEffect(() => {
     cargarConversaciones();
-    api.documents().then(setDocs).catch(() => setGlobalError("No se pudo contactar con el backend."));
+    api
+      .documents()
+      .then((d) => {
+        setDocs(d);
+        setOnline(true);
+      })
+      .catch(() => {
+        setOnline(false);
+        setGlobalError("No se pudo contactar con el backend.");
+      })
+      .finally(() => setLoadingDocs(false));
   }, [cargarConversaciones]);
 
   // Cargar historial cuando cambia la conversación en la URL
@@ -55,6 +69,14 @@ export default function Chat() {
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages]);
+
+  // Textarea que crece con el contenido
+  useEffect(() => {
+    const ta = taRef.current;
+    if (!ta) return;
+    ta.style.height = "auto";
+    ta.style.height = Math.min(ta.scrollHeight, 180) + "px";
+  }, [input]);
 
   const actualizarUltimo = (fn) =>
     setMessages((ms) => {
@@ -103,6 +125,7 @@ export default function Chat() {
         },
         ctrl.signal
       );
+      setOnline(true);
     } catch (e) {
       if (e.name !== "AbortError")
         actualizarUltimo((m) => ({ ...m, error: e.message || "Error de red", streaming: false, status: null }));
@@ -111,6 +134,7 @@ export default function Chat() {
       setBusy(false);
       abortRef.current = null;
       cargarConversaciones();
+      taRef.current?.focus();
     }
   }
 
@@ -136,135 +160,200 @@ export default function Chat() {
     cargarConversaciones();
   }
 
+  const docActual = docs.find((d) => d.id === docId);
+  const convActual = conversations.find((c) => c.id === convId);
+  const estado = online === null ? "checking" : online ? "on" : "off";
+  const estadoTxt = { checking: "Conectando…", on: "En línea", off: "Sin conexión" }[estado];
+
   return (
-    <div className="layout">
-      <aside className={"sidebar" + (sidebar ? " open" : "")}>
-        <div className="brand">
-          📚 <span>Agente Académico</span>
+    <div className="cx">
+      {sidebar && <div className="cx-scrim" onClick={() => setSidebar(false)} />}
+
+      {/* ---------- Barra lateral ---------- */}
+      <aside className={"cx-side" + (sidebar ? " open" : "")}>
+        <div className="cx-brand">
+          <div className="cx-logo">AA</div>
+          <div>
+            <div className="cx-brand-name">Agente Académico</div>
+            <div className="cx-brand-sub">RAG sobre artículos Q1</div>
+          </div>
         </div>
-        <button className="btn primary block" onClick={nueva}>
-          + Nueva conversación
+
+        <button className="cx-new" onClick={nueva}>
+          <span>＋</span> Nueva conversación
         </button>
-        {docs.length > 1 && (
-          <label className="field">
-            <span>Artículo</span>
-            <select value={docId} onChange={(e) => setDocId(e.target.value)}>
-              <option value="">Todos los artículos</option>
-              {docs.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.title}
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
-        <div className="conv-list">
-          <div className="conv-title">Historial</div>
-          {conversations.length === 0 && <div className="muted small">Aún no hay conversaciones</div>}
+
+        <div className="cx-section-label">Historial</div>
+        <nav className="cx-convs">
+          {conversations.length === 0 && <div className="cx-empty-small">Aún no hay conversaciones</div>}
           {conversations.map((c) => (
             <Link
               key={c.id}
               to={`/c/${c.id}`}
-              className={"conv" + (c.id === convId ? " active" : "")}
+              className={"cx-conv" + (c.id === convId ? " active" : "")}
               onClick={() => setSidebar(false)}
+              title={c.title}
             >
-              <span className="conv-name">{c.title}</span>
-              <span className="conv-del" onClick={(e) => borrar(c.id, e)} title="Borrar">
+              <span className="cx-conv-dot" />
+              <span className="cx-conv-name">{c.title}</span>
+              <button className="cx-conv-del" onClick={(e) => borrar(c.id, e)} title="Borrar" aria-label="Borrar">
                 ×
-              </span>
+              </button>
             </Link>
           ))}
-        </div>
-        <div className="sidebar-foot">
+        </nav>
+
+        <div className="cx-section-label">Artículos indexados</div>
+        <div className="cx-docs">
+          {loadingDocs && <div className="cx-skel" />}
+          {!loadingDocs && docs.length === 0 && <div className="cx-empty-small">Ninguno todavía</div>}
           {docs.map((d) => (
-            <div key={d.id} className="doc-pill" title={d.title}>
-              📄 {d.title}
-              <small>
-                {d.num_pages ?? "?"} págs · {d.num_chunks} chunks · {d.num_tables} tablas · {d.num_figures} figuras
-              </small>
-            </div>
+            <button
+              key={d.id}
+              className={"cx-doc" + (docId === d.id ? " active" : "")}
+              onClick={() => setDocId(docId === d.id ? "" : d.id)}
+              title={d.title}
+            >
+              <div className="cx-doc-title">{d.title}</div>
+              <div className="cx-doc-stats">
+                <span>{d.num_pages ?? "?"} págs</span>
+                <span>{d.num_chunks} chunks</span>
+                <span>{d.num_tables} tablas</span>
+                <span>{d.num_figures} figs</span>
+              </div>
+            </button>
           ))}
-          <Link to="/admin" className="admin-link">
-            Panel /admin →
-          </Link>
         </div>
+
+        <Link to="/admin" className="cx-admin">
+          Panel de administración <span>→</span>
+        </Link>
       </aside>
 
-      <main className="chat">
-        <header className="chat-header">
-          <button className="btn ghost menu" onClick={() => setSidebar(!sidebar)} aria-label="Menú">
+      {/* ---------- Zona principal ---------- */}
+      <main className="cx-main">
+        <header className="cx-head">
+          <button className="cx-icon-btn cx-menu" onClick={() => setSidebar(!sidebar)} aria-label="Menú">
             ☰
           </button>
-          <div>
-            <div className="chat-h-title">Pregúntale al artículo</div>
-            <div className="muted small">
-              Respuestas fundamentadas con citas de sección y página · si no está en el artículo, te lo dice
-            </div>
+          <div className="cx-head-text">
+            <div className="cx-head-title">{convActual?.title || "Pregúntale al artículo"}</div>
+            <div className="cx-head-sub">Respuestas con cita de sección y página · si no está en el artículo, te lo dice</div>
+          </div>
+          <div className="cx-head-right">
+            {docs.length > 0 && (
+              <select className="cx-select" value={docId} onChange={(e) => setDocId(e.target.value)} title="Artículo a consultar">
+                <option value="">Todos los artículos</option>
+                {docs.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.title}
+                  </option>
+                ))}
+              </select>
+            )}
+            <span className={"cx-status " + estado}>
+              <i />
+              {estadoTxt}
+            </span>
           </div>
         </header>
 
-        {globalError && <div className="error-box global">⚠️ {globalError}</div>}
-        {docs.length === 0 && !globalError && (
-          <div className="warn-box">
+        {globalError && (
+          <div className="cx-alert err">
+            <span>⚠ {globalError}</span>
+            <button onClick={() => setGlobalError("")} aria-label="Cerrar">
+              ×
+            </button>
+          </div>
+        )}
+        {!loadingDocs && docs.length === 0 && online && (
+          <div className="cx-alert warn">
             No hay artículos indexados todavía. Copia el PDF en <code>data/papers/</code> y ejecuta{" "}
             <code>docker compose run --rm ingest</code>.
           </div>
         )}
 
-        <div className="messages">
-          {loadingConv && <div className="muted center">Cargando conversación…</div>}
-          {!loadingConv && messages.length === 0 && (
-            <div className="empty">
-              <h2>¿Qué quieres saber del artículo?</h2>
-              <div className="suggestions">
-                {SUGERENCIAS.map((s) => (
-                  <button key={s} className="suggestion" onClick={() => enviar(s)}>
-                    {s}
-                  </button>
-                ))}
+        <div className="cx-scroll">
+          <div className="cx-thread">
+            {loadingConv && (
+              <div className="cx-loading">
+                <div className="cx-skel w60" />
+                <div className="cx-skel w80 right" />
+                <div className="cx-skel w70" />
               </div>
-            </div>
-          )}
-          {messages.map((m, i) => (
-            <Message
-              key={m.id ?? i}
-              m={m}
-              onRetry={i === messages.length - 1 && m.error && !busy ? reintentar : null}
-            />
-          ))}
-          <div ref={endRef} />
+            )}
+
+            {!loadingConv && messages.length === 0 && (
+              <div className="cx-hero">
+                <div className="cx-hero-badge">Survey Q1 · RAG híbrido</div>
+                <h1>
+                  ¿Qué quieres saber <span>del artículo</span>?
+                </h1>
+                <p>
+                  {docActual
+                    ? `Consultando: ${docActual.title}`
+                    : docs.length > 1
+                    ? `Buscando en ${docs.length} artículos`
+                    : "Haz una pregunta o elige una sugerencia"}
+                </p>
+                <div className="cx-sugs">
+                  {SUGERENCIAS.map((s) => (
+                    <button key={s.q} className="cx-sug" onClick={() => enviar(s.q)} disabled={busy}>
+                      <span className="cx-sug-tag">{s.t}</span>
+                      <span className="cx-sug-q">{s.q}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {messages.map((m, i) => (
+              <Message
+                key={m.id ?? i}
+                m={m}
+                onRetry={i === messages.length - 1 && m.error && !busy ? reintentar : null}
+              />
+            ))}
+            <div ref={endRef} />
+          </div>
         </div>
 
-        <form
-          className="composer"
-          onSubmit={(e) => {
-            e.preventDefault();
-            enviar();
-          }}
-        >
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                enviar();
-              }
+        <div className="cx-composer-wrap">
+          <form
+            className={"cx-composer" + (busy ? " busy" : "")}
+            onSubmit={(e) => {
+              e.preventDefault();
+              enviar();
             }}
-            placeholder="Escribe tu pregunta sobre el artículo…  (Enter para enviar, Shift+Enter salto de línea)"
-            rows={2}
-            disabled={busy}
-          />
-          {busy ? (
-            <button type="button" className="btn" onClick={() => abortRef.current?.abort()}>
-              Detener
-            </button>
-          ) : (
-            <button type="submit" className="btn primary" disabled={!input.trim()}>
-              Enviar
-            </button>
-          )}
-        </form>
+          >
+            <textarea
+              ref={taRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  enviar();
+                }
+              }}
+              placeholder={busy ? "Generando respuesta…" : "Escribe tu pregunta sobre el artículo…"}
+              rows={1}
+              disabled={busy}
+            />
+            {busy ? (
+              <button type="button" className="cx-send stop" onClick={() => abortRef.current?.abort()} title="Detener">
+                ■
+              </button>
+            ) : (
+              <button type="submit" className="cx-send" disabled={!input.trim()} title="Enviar">
+                ↑
+              </button>
+            )}
+          </form>
+          <div className="cx-hint">
+            <kbd>Enter</kbd> enviar · <kbd>Shift</kbd>+<kbd>Enter</kbd> nueva línea
+          </div>
+        </div>
       </main>
     </div>
   );
