@@ -1,0 +1,8 @@
+{
+  "framework": "vite",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://thinner-audibly-refill.ngrok-free.dev/api/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
